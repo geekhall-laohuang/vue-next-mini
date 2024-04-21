@@ -14,3 +14,10 @@ export const isObject = (val: unknown) =>
  */
 export const hasChanged = (value: any, oldValue: any): boolean =>
   !Object.is(value, oldValue)
+
+/**
+ *  判断是否为一个函数
+ */
+export const isFunction = (val: unknown): val is Function => {
+  return typeof val === 'function'
+}
