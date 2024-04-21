@@ -23,7 +23,13 @@ var Vue = (function (exports) {
     var isFunction = function (val) {
         return typeof val === 'function';
     };
+    /**
+     * Object.assign
+     */
     var extend = Object.assign;
+    /**
+     * 只读的空对象
+     */
     var EMPTY_OBJ = {};
 
     /******************************************************************************
@@ -93,6 +99,11 @@ var Vue = (function (exports) {
      * 		2. `value`：指定对象的指定属性的 执行函数
      */
     var targetMap = new WeakMap();
+    /**
+     * effect 函数
+     * @param fn 执行方法
+     * @returns 以 ReactiveEffect 实例为 this 的执行函数
+     */
     function effect(fn, options) {
         var _effect = new ReactiveEffect(fn);
         if (options) {
@@ -414,26 +425,49 @@ var Vue = (function (exports) {
         return cRef;
     }
 
+    // 对应 promise 的 pending 状态
     var isFlushPending = false;
+    /**
+     * promise.resolve()
+     */
     var resolvedPromise = Promise.resolve();
+    /**
+     * 待执行的任务队列
+     */
     var pendingPreFlushCbs = [];
+    /**
+     * 队列预处理函数
+     */
     function queuePreFlushCb(cb) {
         queueCb(cb, pendingPreFlushCbs);
     }
+    /**
+     * 队列处理函数
+     */
     function queueCb(cb, pendingQueue) {
+        // 将所有的回调函数，放入队列中
         pendingQueue.push(cb);
         queueFlush();
     }
+    /**
+     * 依次处理队列中执行函数
+     */
     function queueFlush() {
         if (!isFlushPending) {
             isFlushPending = true;
             resolvedPromise.then(flushJobs);
         }
     }
+    /**
+     * 处理队列
+     */
     function flushJobs() {
         isFlushPending = false;
         flushPreFlushCbs();
     }
+    /**
+     * 依次处理队列中的任务
+     */
     function flushPreFlushCbs() {
         if (pendingPreFlushCbs.length) {
             var activePreFlushCbs = __spreadArray([], __read(new Set(pendingPreFlushCbs)), false);
@@ -444,24 +478,36 @@ var Vue = (function (exports) {
         }
     }
 
+    /**
+     * 指定的 watch 函数
+     * @param source 监听的响应性数据
+     * @param cb 回调函数
+     * @param options 配置对象
+     * @returns
+     */
     function watch(source, cb, options) {
         return doWatch(source, cb, options);
     }
     function doWatch(source, cb, _a) {
         var _b = _a === void 0 ? EMPTY_OBJ : _a, immediate = _b.immediate, deep = _b.deep;
+        // 触发 getter 的指定函数
         var getter;
+        // 判断 source 的数据类型
         if (isReactive(source)) {
+            // 指定 getter
             getter = function () { return source; };
             deep = true;
         }
         else {
             getter = function () { };
         }
+        // 存在回调函数和deep
         if (cb && deep) {
             var baseGetter_1 = getter;
             getter = function () { return traverse(baseGetter_1()); };
         }
         var oldValue = {};
+        // job 执行方法
         var job = function () {
             if (cb) {
                 var newValue = effect.run();
@@ -471,6 +517,7 @@ var Vue = (function (exports) {
                 }
             }
         };
+        // 调度器
         var scheduler = function () { return queuePreFlushCb(job); };
         var effect = new ReactiveEffect(getter, scheduler);
         if (cb) {
@@ -488,6 +535,9 @@ var Vue = (function (exports) {
             effect.stop();
         };
     }
+    /**
+     * 依次执行 getter，从而触发依赖收集
+     */
     function traverse(value) {
         if (!isObject(value)) {
             return value;

@@ -19,6 +19,11 @@ export interface ReactiveEffectOptions {
   scheduler?: EffectScheduler
 }
 
+/**
+ * effect 函数
+ * @param fn 执行方法
+ * @returns 以 ReactiveEffect 实例为 this 的执行函数
+ */
 export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions) {
   const _effect = new ReactiveEffect(fn)
 
