@@ -638,9 +638,14 @@ function baseCreateRenderer(options: RendererOptions): any {
 
 /**
  * 获取最长递增子序列下标
- *
+ * 维基百科：https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+ * 百度百科：https://baike.baidu.com/item/%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97/22828111
  */
-
+/**
+ * 获取最长递增子序列下标
+ * 维基百科：https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+ * 百度百科：https://baike.baidu.com/item/%E6%9C%80%E9%95%BF%E9%80%92%E5%A2%9E%E5%AD%90%E5%BA%8F%E5%88%97/22828111
+ */
 function getSequence(arr) {
   // 获取一个数组浅拷贝。注意 p 的元素改变并不会影响 arr
   // p 是一个最终的回溯数组，它会在最终的 result 回溯中被使用
@@ -680,6 +685,7 @@ function getSequence(arr) {
       // 只有初始下标 < 最终下标时才需要计算
       while (u < v) {
         // (u + v) 转化为 32 位 2 进制，右移 1 位 === 取中间位置（向下取整）例如：8 >> 1 = 4;  9 >> 1 = 4; 5 >> 1 = 2
+        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Right_shift
         // c 表示中间位。即：初始下标 + 最终下标 / 2 （向下取整）
         c = (u + v) >> 1
         // 从 result 中根据 c（中间位），取出中间位的下标。
